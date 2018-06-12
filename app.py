@@ -79,9 +79,15 @@ def token():
 def create_user():
     data = request.get_json()
     data['password'] = generate_password_hash(data['password'])
-    col_users.insert_one(data)
-    return 'usuario ' + data['username'] + ' criado.', 201
-
+    
+    user = col_users.find_one({'username': data['username']})
+    
+    if not user:
+        col_users.insert_one(data)
+        return 'usuario ' + data['username'] + ' criado.', 201
+    else:
+        return 'usuario existente', 203
+        
 @app.route('/users/<username>', methods=['GET'])
 def get_user(username):
     return username, 200
