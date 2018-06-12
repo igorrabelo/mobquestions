@@ -8,9 +8,9 @@
 	},
 	"item": [
 		{
-			"name": "create user",
+			"name": "Create user",
 			"request": {
-				"url": "localhost:8088/user",
+				"url": "http://localhost:8088/users",
 				"method": "POST",
 				"header": [
 					{
@@ -21,9 +21,74 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\"username\": \"schulaz\", \"password\": \"a123\"}\n"
+					"raw": "{\"username\": \"mark\", \"password\": \"a123\", \"email\": \"mark@knopfler.com\", \"name\": \"Mark\", \"phones\": [\"3333-2222\", \"2222-3333\"]}"
 				},
 				"description": "cria um usuário na coleção users"
+			},
+			"response": []
+		},
+		{
+			"name": "Authenticate",
+			"request": {
+				"url": "http://localhost:8088/signin",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\": \"mark\", \"password\": \"a123\"}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "List Users",
+			"request": {
+				"url": "http://localhost:8088/",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Test and view token",
+			"request": {
+				"url": "http://localhost:8088/token",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtYXJrIiwiaWF0IjoxNTI4NjgyNjg0LCJleHAiOjE1Mjg2ODI5ODR9.YMVpQzqzQj9mnr0QYxZZbAOsIgKGLPVtia1aM0fvqcg",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Refresh token",
+			"request": {
+				"url": "http://localhost:8088/token",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtYXJrIiwiaWF0IjoxNTI4NjgyNjg0LCJleHAiOjE1Mjg2ODI5ODR9.YMVpQzqzQj9mnr0QYxZZbAOsIgKGLPVtia1aM0fvqcg",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": ""
 			},
 			"response": []
 		}
