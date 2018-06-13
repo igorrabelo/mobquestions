@@ -88,6 +88,27 @@ def create_user():
     else:
         return 'usuario existente', 203
 
+@app.route('/users/<username>', methods=['GET'])
+def get_user(username):
+    user = col_users.find_one({'username': username})
+    if not user:
+        return 'usuario nao existe', 404
+    else:
+        return json_util.dumps(user), 200
+
+@app.route('/users/<username>', methods=['PUT'])
+def put_user(username):
+    data = request.get_json()    
+
+    result  = col_users.find_one_and_update({'username': username},
+    {'$set': {"name": data['name'], "phones": data['phones'], "email": data['email']}})
+
+    if not result:
+        return 'nao foi possivel atualizar', 404
+    else:
+        return json_util.dumps(result), 200
+
+
 @app.route('/authenticate1', methods=['POST'])
 def authenticate1():
     data = request.get_json()    
@@ -101,15 +122,6 @@ def authenticate1():
         else:
             return 'usuario ' + data['username'] + ' invalido.', 403
 
-@app.route('/users/<username>', methods=['GET'])
-def get_user(username):
-    
-    user = col_users.find_one({'username': username})
-    
-    if not user:
-        return 'nao encontrado', 404
-    else:
-        return json_util.dumps(user), 200
 
 # rota para exemplificar como utilizar obter variaveis
 # de url. teste acessando 
