@@ -90,7 +90,13 @@ def create_user():
         
 @app.route('/users/<username>', methods=['GET'])
 def get_user(username):
-    return username, 200
+    
+    user = col_users.find_one({'username': username})
+    
+    if not user:
+        return 'nao encontrado', 404
+    else:
+        return json_util.dumps(user), 200
 
 # rota para exemplificar como utilizar obter variaveis
 # de url. teste acessando 
