@@ -40,9 +40,9 @@ def signin():
         refresh_token = create_refresh_token(token_payload)
         col_tokens.insert_one({'value': refresh_token})
         return jsonify({'access_token': access_token, 
-                        'refresh_token': refresh_token})
+                        'refresh_token': refresh_token}), 200
     else:
-        return "Unauthorized", 401
+        return "Unauthorized", 403
 
 
 @app.route('/', methods=['GET'])
@@ -87,7 +87,20 @@ def create_user():
         return 'usuario ' + data['username'] + ' criado.', 201
     else:
         return 'usuario existente', 203
-        
+
+@app.route('/authenticate1', methods=['POST'])
+def authenticate1():
+    data = request.get_json()    
+    user = col_users.find_one({'username': data['username']})
+    
+    if not data['username'] or not data['password']:
+        return 'informacao de usuario e senha obrigatoria.', 400
+    else:   
+        if user and check_password_hash(user['password'], data['password']):
+            return 'usuario ' + data['username'] + ' autenticado.', 200
+        else:
+            return 'usuario ' + data['username'] + ' invalido.', 403
+
 @app.route('/users/<username>', methods=['GET'])
 def get_user(username):
     
