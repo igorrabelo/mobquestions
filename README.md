@@ -76,11 +76,11 @@ exemplo de dados de request:
 retorna os dados da questão correpondente (pelo username) em formato JSON e o status code 200; ou status code 404 caso a questão não exista.
 
 
-6. POST `/v1/questions/<question_id>/comment` (incluir comentário em questão)
+6. POST `/v1/comment` (incluir comentário em questão)
 retorna os dados da questão atualizada em formato json e o status code 200 em caso de sucesso.
 se a questão não for encontrada, status code 404. se o usuário não for encontrado, ou os dados enviados estiverem inválidos retornar status code 400.
 ```javascript
-{"username": "mark", "message": "essa questao e facil"}
+{"question_id": "yut4fsd-qs", "username": "mark", "message": "essa questao e facil"}
 ```
 
 7. GET `/v1/questions/search` (buscar questões)
