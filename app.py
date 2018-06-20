@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, redirect, g
-from flask_pymongo import PyMongo
+from flask_pymongo import PyMongo 
+from pymongo import ReturnDocument
 
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -122,7 +123,56 @@ def authenticate1():
         else:
             return 'usuario ' + data['username'] + ' invalido.', 403
 
+@app.route('/users/<username>', methods=['PATCH'])
+def patch_user(username):
+    data = request.get_json()    
 
+    result  = col_users.find_one_and_update({'username': username},
+    {'$set': {"password": data['password']}})
+
+    if not result:
+        return 'nao foi possivel atualizar', 404
+    else:
+        return json_util.dumps(result), 200
+
+@app.route('/questions/<question_id>', methods=['GET'])
+def get_question(question_id):
+        
+    question = col_questions.find_one({'id': question_id})
+
+    if not question:
+        return 'nao foi possivel carregar questao', 404
+    else:
+        return json_util.dumps(question), 200
+
+@app.route('/comment', methods=['POST'])
+def post_comment():
+    data = request.get_json()    
+
+    question = col_questions.find_one({'id': data['question_id']})
+    
+    if not question:
+        return 'nao foi possivel encontrar a questao', 404
+    else:        
+        user = col_users.find_one({'username': data['username']})
+        if not user:
+            return 'usuario nao existe', 400
+        else:
+            #import pdb; pdb.set_trace()            
+            del(data['question_id'])
+            if 'comments' in question.keys():
+                question['comments'].append(data)                
+            else:
+                question['comments'] = [data]
+             
+            result = col_questions.find_one_and_update({'id': question['id']},
+            {'$set': {"comments": question['comments']}},
+            return_document=ReturnDocument.AFTER)
+            
+            return json_util.dumps(result), 200
+
+
+                
 # rota para exemplificar como utilizar obter variaveis
 # de url. teste acessando 
 # http://localhost:8088/questions/search?disciplina=1 
