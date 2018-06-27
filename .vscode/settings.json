@@ -1,3 +1,4 @@
 {
     "python.pythonPath": "C:\\Users\\09713051700\\dev\\mobquestions\\env\\Scripts"
+    "python.linting.pylintEnabled": false
 }
