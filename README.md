@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/du2x/pystro.svg?branch=master)](https://travis-ci.org/du2x/pystro) 
+
+
 # mobquestions
 
 Repositório de atividade em grupo da disciplina de arquitetura de computação em nuvens da pós graduação de Desenvolvimento de Aplicações Móveis da PUC-MG.
@@ -41,7 +44,7 @@ Implemente as seguintes rotas.
 0. POST `/v1/users/` (novo usuário)
 cadastra um novo usuário, com os dados: username, password, email, name, phones.
 retorna status code 201 caso o usuário seja criado; caso o 
-*username* enviado já exista na base de dados, retornar status code 203.
+*username* enviado já exista na base de dados, retornar status code 409 (Conflict).
 exemplo de dados de request: 
 ```javascript
 {"username": "mark", "password": "a123", "email": "mark@knopfler.com", "name": "Mark", "phones": ["3333-2222", "2222-3333"]}
@@ -90,8 +93,16 @@ retorna as questões encontradas baseadas nos critérios de busca e o status cod
 
 8. Modifique as implementações das rotas 3. e 6. para que elas requeiram o envio de um token válido. Teste-os com Postman.
 
-9. POST `/v1/questions/<question_id>/answer`  (responder questao)
+9. POST `/v1/questions/answer/`  (responder questao)
 retorna se a resposta enviada foi correta ou não. Esta rota deve requerer o envio de um token válido.
+Caso a resposta enviada não esteja no domínio de opções válidas, retornar status code 400.
+Exemplo de dados enviados:
+```javascript
+[{"id": "q234541-4c", "answer": "E"},
+{"id": "w23as41-5b", "answer": "C"}
+]
+```
+
 
 10. GET `/v1/questions/answers` (visualizar respostas)
 retorna as respostas enviadas (answer) nas questões respondidas pelo **usuário autenticado**. Observe que para que isso seja possível, a implementação rota 9. deve armazenar as respostas enviadas pelo usuário na coleção de usuários.
