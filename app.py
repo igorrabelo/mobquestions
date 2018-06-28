@@ -17,8 +17,9 @@ rcache = redis.Redis(
             port=REDIS_PORT,
             password=REDIS_PASSWORD)
 
-def create_app(testing = False):
+def create_app():
     app = Flask(__name__)
+    #import pdb; pdb.set_trace()
     if os.getenv('FLASK_TESTING') and os.getenv('FLASK_TESTING')=='1':
         app.config['MONGO_URI'] = MONGO_URI_TESTS
     else:
@@ -28,13 +29,13 @@ def create_app(testing = False):
     app_context.push()        
     return app
 
-app = Flask(__name__)
-app.config['MONGO_URI'] = MONGO_URI
-app.config['DEBUG'] = True
+#app = Flask(__name__)
+#app.config['MONGO_URI'] = MONGO_URI
+#app.config['DEBUG'] = True
+#app_context = app.app_context()
+#app_context.push()
 
-app_context = app.app_context()
-app_context.push()
-
+app = create_app()
 mongo = PyMongo(app)
 
 col_users = mongo.db.users
@@ -109,10 +110,14 @@ def token():
 @app.route('/users', methods=['POST'])
 def create_user():
     data = request.get_json()
+    
+    if 'password' not in data.keys() or 'username' not in data.keys():
+        return 'Dados insuficientes.', 400
+    
     data['password'] = generate_password_hash(data['password'])
     
     user = col_users.find_one({'username': data['username']})
-    
+    #import pdb; pdb.set_trace()
     if not user:
         col_users.insert_one(data)
         return 'usuario ' + data['username'] + ' criado.', 201
