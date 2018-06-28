@@ -19,7 +19,7 @@ rcache = redis.Redis(
 
 def create_app(testing = False):
     app = Flask(__name__)
-    if os.getenv('FLASK_TESTING') and os.getenv('FLASK_TESTING')==1:
+    if os.getenv('FLASK_TESTING') and os.getenv('FLASK_TESTING')=='1':
         app.config['MONGO_URI'] = MONGO_URI_TESTS
     else:
         app.config['MONGO_URI'] = MONGO_URI
