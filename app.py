@@ -217,7 +217,7 @@ def post_comment():
             
             return json_util.dumps(result), 200
 
-@app.route('/v1/questions/answer', methods=['POST'])
+@app.route('/questions/answer', methods=['POST'])
 @jwt_required
 def insert_answer():
     jwt = g.parsed_token
@@ -247,7 +247,7 @@ def insert_answer():
     else:
         return 'Resposta já registrada', 409
 
-@app.route('/questions/resposta', methods=['GET'])
+@app.route('/questions/answers', methods=['GET'])
 @jwt_required
 def get_answer():
     jwt = g.parsed_token
@@ -259,14 +259,14 @@ def get_answer():
         return 'Nao Encontrado', 404
 
 
-@app.route('/destaque_questions', methods=['POST'])
+@app.route('/feature_questions', methods=['POST'])
 def set_featured_questions():
     featured_questions = col_questions.find({}).sort([('answersNumber', DESCENDING)]).limit(10)
     rcache.set('featured_questions', json_util.dumps(list(featured_questions)))
     return 'Atualizacao de Cache', 200
 
 
-@app.route('/destaque_questions', methods=['GET'])
+@app.route('/feature_questions', methods=['GET'])
 def get_featured_questions():
     featured_questions = rcache.get('featured_questions')
     if featured_questions is not None:
