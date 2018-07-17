@@ -170,6 +170,17 @@ def patch_user(username):
     else:
         return json_util.dumps(result), 200
 
+@app.route('/questions/search', methods=['GET'])
+def search():
+    args = request.args.to_dict()
+    if 'disciplina' in args:
+        args['disciplina'] = int_try_parse(args['disciplina'])
+    if 'ano' in args:
+        args['ano'] = int_try_parse(args['ano'])
+
+    questions = col_questions.find(args)
+    return json_util.dumps(list(questions)), 200
+
 @app.route('/questions/<question_id>', methods=['GET'])
 def get_question(question_id):
         
@@ -206,12 +217,62 @@ def post_comment():
             
             return json_util.dumps(result), 200
 
+@app.route('/v1/questions/answer', methods=['POST'])
+@jwt_required
+def insert_answer():
+    jwt = g.parsed_token
+    data = request.get_json()
+    userAnswer = data['answer'].upper()
+    question_id = data['id']
+    answer = col_answers.find_one({'id': question_id, 'username': jwt['username']})
 
+    if answer is None:
+        question = col_questions.find_one({'id': question_id}, {'_id': 0, 'resposta': 1})
+        answer_is_correct = True if userAnswer == question['resposta'] else False
+        
+        answer = {
+            'id': question_id,
+            'username': jwt['username'],
+            'answer': userAnswer,
+            'answer_is_correct': answer_is_correct
+        }
+        
+        col_answers.insert_one(answer)
+        col_questions.update_one({'id': question_id}, {'$inc': {'answersNumber': 1}})
+
+        if answer_is_correct:
+            return 'Resposta Correta', 200
+        else:
+            return 'Resposta Incorreta', 200
+    else:
+        return 'Resposta já registrada', 409
+
+@app.route('/questions/resposta', methods=['GET'])
+@jwt_required
+def get_answer():
+    jwt = g.parsed_token
+    answers = list(col_answers.find({'username': jwt['username']}, {'_id': 0, 'id': 1, 'answer': 1}))
+    
+    if len(answers) > 0:
+        return json_util.dumps(answers), 200
+    else:
+        return 'Nao Encontrado', 404
+
+
+@app.route('/destaque_questions', methods=['POST'])
+def set_featured_questions():
+    featured_questions = col_questions.find({}).sort([('answersNumber', DESCENDING)]).limit(10)
+    rcache.set('featured_questions', json_util.dumps(list(featured_questions)))
+    return 'Atualizacao de Cache', 200
+
+
+@app.route('/destaque_questions', methods=['GET'])
+def get_featured_questions():
+    featured_questions = rcache.get('featured_questions')
+    if featured_questions is not None:
+        return featured_questions, 200
+    else:
+        featured_questions = list(col_questions.find({}).sort([('answersNumber', DESCENDING)]).limit(10))
+        rcache.set('featured_questions', json_util.dumps(featured_questions))
+        return json_util.dumps(featured_questions), 200
                 
-# rota para exemplificar como utilizar obter variaveis
-# de url. teste acessando 
-# http://localhost:8088/questions/search?disciplina=1 
-@app.route('/questions/search', methods=['GET'])
-def search():
-    disciplina = request.args.get('disciplina')
-    return disciplina, 200
